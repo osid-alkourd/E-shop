@@ -1,22 +1,54 @@
 import { React, useState } from "react";
 import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
 import styles from "../../styles/styles";
-import { Link } from "react-router-dom";
+import { Link,useNavigate } from "react-router-dom";
 import { RxAvatar } from "react-icons/rx";
+import axios from "axios";
+import { toast } from 'react-toastify';
+import { server } from "../../server";
 const Singup = () => {
     const [email, setEmail] = useState("");
     const [name, setName] = useState("");
     const [password, setPassword] = useState("");
+    const [confirmPassword, setConfirmPassword] = useState("");
     const [visible, setVisible] = useState(false);
+    const [visibleConfirm, setVisibleConfirm] = useState(false); // 👈 for confirm field
     const [avatar, setAvatar] = useState(null);
+    const navigate = useNavigate();
+
 
     const handleFileInputChange = (e) => {
-       const file = e.target.files[0];
-       setAvatar(file);
+        const file = e.target.files[0];
+        setAvatar(file);
 
     };
 
-   
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        console.log('gggggg')
+        const config = { headers: { "content-type": "multipart/form-data" } };
+        const newForm = new FormData();
+        newForm.append('avatar', avatar);
+        newForm.append('name', name);
+        newForm.append('password', password);
+        newForm.append('email', email);
+        newForm.append('confirmPassword', confirmPassword);
+        console.log(newForm);
+        axios.post(`${server}/user/register`, newForm, config).then((res) => {
+            console.log(res.data)
+            if(res.data.success === true){
+                toast.success(res.data.message);
+                setName("");
+                setEmail("");
+                setAvatar();
+                setPassword("");
+                //navigate('/');
+            }
+        }).catch((err) => {
+            toast.error(err.response.data.message)
+            console.log(err);
+        })
+    }
 
     return (
         <div className="min-h-screen bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
@@ -27,7 +59,7 @@ const Singup = () => {
             </div>
             <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
                 <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
-                    <form className="space-y-6">
+                    <form className="space-y-6" onSubmit={handleSubmit}>
                         <div>
                             <label
                                 htmlFor="email"
@@ -101,6 +133,39 @@ const Singup = () => {
                             </div>
                         </div>
 
+                        {/* Confirm Password Field */}
+                        <div className="mt-4">
+                            <label
+                                htmlFor="confirm-password"
+                                className="block text-sm font-medium text-gray-700"
+                            >
+                                Confirm Password
+                            </label>
+                            <div className="mt-1 relative">
+                                <input
+                                    type={visibleConfirm ? "text" : "password"}
+                                    name="confirmPassword"
+                                    autoComplete="off"
+                                    required
+                                    value={confirmPassword}
+                                    onChange={(e) => setConfirmPassword(e.target.value)}
+                                    className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                                />
+                                {visibleConfirm ? (
+                                    <AiOutlineEye
+                                        className="absolute right-2 top-2 cursor-pointer"
+                                        size={25}
+                                        onClick={() => setVisibleConfirm(false)}
+                                    />
+                                ) : (
+                                    <AiOutlineEyeInvisible
+                                        className="absolute right-2 top-2 cursor-pointer"
+                                        size={25}
+                                        onClick={() => setVisibleConfirm(true)}
+                                    />
+                                )}
+                            </div>
+                        </div>
                         <div>
                             <label
                                 htmlFor="avatar"
