@@ -1,11 +1,27 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { LoginPage, SignupPage, ActivationPage } from "./routes/Routes";
+import {
+  LoginPage,
+  SignupPage,
+  ActivationPage,
+  HomePage,
+} from "./routes/Routes";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-
+import axios from "axios";
+import { server } from "./server";
+import { loadUser } from "./redux/actions/userAction";
+import store from "./redux/store";
 import "./App.css";
 const App = () => {
+  useEffect(() => {
+    store.dispatch(loadUser());
+  }, []);
+  // useEffect(() => {
+  //   axios.get(`${server}/user/getuser`,{withCredential: true}).then((res) => {
+
+  //   })
+  // })
   return (
     <div>
       <BrowserRouter>
@@ -16,6 +32,7 @@ const App = () => {
             path="/activation/:activation_token"
             element={<ActivationPage />}
           ></Route>
+          <Route path="/" element={<HomePage />}></Route>
         </Routes>
         <ToastContainer
           position="bottom-center"

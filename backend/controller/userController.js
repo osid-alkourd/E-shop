@@ -10,6 +10,7 @@ const bcrypt = require("bcrypt");
 const catchAsyncErrors = require("../middleware/catchAsyncErrors");
 const sendToken = require("../utils/jwtToken");
 const fs = require("fs").promises;
+const {isAuthenticated} = require('../middleware/auth')
 
 // const sendToken = require("../utils/jwtToken");
 
@@ -125,4 +126,27 @@ router.post(
     sendToken(user, 200, res);
   })
 );
+
+// load user
+router.get(
+  "/getuser",
+  isAuthenticated,
+  catchAsyncErrors(async (req, res, next) => {
+    try {
+      const user = await User.findById(req.user._id);
+
+      if (!user) {
+        return next(new ErrorHandler("User doesn't exists", 404));
+      }
+
+      res.status(200).json({
+        success: true,
+        user,
+      });
+    } catch (error) {
+      return next(new ErrorHandler(error.message, 500));
+    }
+  })
+);
+//
 module.exports = router;

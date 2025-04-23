@@ -7,6 +7,7 @@ import axios from "axios";
 import { server } from "../../server";
 import { toast } from "react-toastify";
 const Login = () => {
+
   const navigate = useNavigate();
 
   const [email, setEmail] = useState("");
@@ -15,10 +16,9 @@ const Login = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    await axios.post(`${server}/user/login`, {
-      email,
-      password
-    }).then((res) => {
+    await axios.post(`${server}/user/login`, {email, password} , 
+      {withCredentials: true} // to receive the cookie and send it
+    ).then((res) => {
       toast.success("Login Success!");
       navigate("/");
     }).catch((error) => {
