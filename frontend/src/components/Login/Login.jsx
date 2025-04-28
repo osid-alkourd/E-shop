@@ -17,12 +17,25 @@ const Login = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     await axios.post(`${server}/user/login`, {email, password} , 
-      {withCredentials: true} // to receive the cookie and send it
+      {
+        withCredentials: true, // Keep this!
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      }
+      // {withCredentials: true ,// to receive the cookie and send it
+      //   headers: {
+      //     'Content-Type': 'application/json'
+      //   }
+      // } 
+
     ).then((res) => {
       toast.success("Login Success!");
       navigate("/");
+      window.location.reload(); // Full page reload
+
     }).catch((error) => {
-       toast.error(error.response.data.message);
+       toast.error(error);
     })
   }
 

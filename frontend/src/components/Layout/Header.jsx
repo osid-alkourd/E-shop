@@ -8,12 +8,13 @@ import { BiMenuAltLeft } from "react-icons/bi";
 import DropDown from './DropDown';
 import Navbar from "./Navbar";
 import { CgProfile } from "react-icons/cg";
-
+import { useSelector } from "react-redux";
 const Header = ({ activeHeading }) => {
     const [searchTerm, setSearchTerm] = useState('');
     const [searchData, setSearchData] = useState(null);
     const [active, setActive] = useState(false);
     const [dropDown, setDropDown] = useState(false);
+    const { isAuthenticated, user } = useSelector((state) => state.user);
 
     const handleSearchChange = (e) => {
         const term = e.target.value;
@@ -146,9 +147,19 @@ const Header = ({ activeHeading }) => {
 
                         <div className={`${styles.noramlFlex}`}>
                             <div className="relative cursor-pointer w-fit mr-[15px]">
-                                <Link>
-                                    <CgProfile size={30} color="rgb(255 255 255 / 83%)" />
-                                </Link>
+                                {isAuthenticated ? (
+                                    <Link to="/profile">
+                                        <img
+                                            src={`${user?.avatar?.url}`}
+                                            className="w-[35px] h-[35px] rounded-full"
+                                            alt=""
+                                        />
+                                    </Link>) :(
+                                    <Link to="/login">
+                                        <CgProfile size={30} color="rgb(255 255 255 / 83%)" />
+                                    </Link>
+                                )
+                                }
                             </div>
                         </div>
 

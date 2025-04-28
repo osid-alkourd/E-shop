@@ -9,18 +9,22 @@ export const loadUser = () => async (dispatch) => {
         type: "LoadUserRequest",
       });
       const { data } = await axios.get(`${server}/user/getuser`, {
-        withCredentials: true,
+        withCredentials: true, // Keep this!
+        headers: {
+          'Content-Type': 'application/json'
+        }
       });
       dispatch({
         type: "LoadUserSuccess",
         payload: data.user,
       });
     } catch (error) {
+      const message = error.response?.data?.message || error.message;
       dispatch({
         type: "LoadUserFail",
-        payload: error.response.data.message,
+        payload: message,
       });
-      console.log('osid error')
+      console.log('get user error')
     }
   };
   
