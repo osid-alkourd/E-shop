@@ -9,12 +9,16 @@ import DropDown from './DropDown';
 import Navbar from "./Navbar";
 import { CgProfile } from "react-icons/cg";
 import { useSelector } from "react-redux";
+import Cart from '../Cart/Cart'
+import Wishlist  from "../Wishlist/Wishlist";
 const Header = ({ activeHeading }) => {
     const [searchTerm, setSearchTerm] = useState('');
     const [searchData, setSearchData] = useState(null);
     const [active, setActive] = useState(false);
     const [dropDown, setDropDown] = useState(false);
     const { isAuthenticated, user } = useSelector((state) => state.user);
+    const [openCart, setOpenCart] = useState(false);
+    const [openWishlist, setOpenWishlist] = useState(false);
 
     const handleSearchChange = (e) => {
         const term = e.target.value;
@@ -128,6 +132,7 @@ const Header = ({ activeHeading }) => {
                         <div className={`${styles.noramlFlex}`}>
                             <div
                                 className="relative cursor-pointer mr-[15px]"
+                                onClick={() => setOpenWishlist(true)}
                             >
                                 <AiOutlineHeart size={30} color="rgb(255 255 255 / 83%)" />
                                 <span className="absolute right-0 top-0 rounded-full bg-[#3bc177] w-4 h-4 top right p-0 m-0 text-white font-mono text-[12px] leading-tight text-center">
@@ -137,7 +142,9 @@ const Header = ({ activeHeading }) => {
                         </div>
 
                         <div className={`${styles.noramlFlex}`}>
-                            <div className="relative cursor-pointer w-fit mr-[15px]">
+                            <div className="relative cursor-pointer w-fit mr-[15px]" 
+                             onClick={() => setOpenCart(true)}
+                            >
                                 <AiOutlineShoppingCart size={30} color="rgb(255 255 255 / 83%)" />
                                 <span className="absolute right-0 top-0 rounded-full bg-[#3bc177] w-4 h-4 top right p-0 m-0 text-white font-mono text-[12px] leading-tight text-center">
                                     2
@@ -154,7 +161,7 @@ const Header = ({ activeHeading }) => {
                                             className="w-[35px] h-[35px] rounded-full"
                                             alt=""
                                         />
-                                    </Link>) :(
+                                    </Link>) : (
                                     <Link to="/login">
                                         <CgProfile size={30} color="rgb(255 255 255 / 83%)" />
                                     </Link>
@@ -163,6 +170,20 @@ const Header = ({ activeHeading }) => {
                             </div>
                         </div>
 
+                        {/* cart poput   */}
+
+                        {
+                            openCart ? (
+                                <Cart setOpenCart={setOpenCart}/>
+                            ): null
+                        }
+
+                        {/* wishlist popup*/}
+                        {
+                            openWishlist ? (
+                                <Wishlist setOpenWishlist={setOpenWishlist}/>
+                            ): null
+                        }
 
                     </div>
                 </div>

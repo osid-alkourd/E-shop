@@ -23,11 +23,7 @@ const Login = () => {
           'Content-Type': 'application/json'
         }
       }
-      // {withCredentials: true ,// to receive the cookie and send it
-      //   headers: {
-      //     'Content-Type': 'application/json'
-      //   }
-      // } 
+     
 
     ).then((res) => {
       toast.success("Login Success!");
