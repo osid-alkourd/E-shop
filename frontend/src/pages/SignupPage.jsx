@@ -8,18 +8,16 @@ import { useNavigate } from "react-router-dom";
 
 const SignupPage = () => {
   const navigate = useNavigate();
-  const { isAuthenticated } = useSelector((state) => state.user); // Add loading state
-  const [loading, setLoading] = useState(true);  // Track page loading
+  const { isAuthenticated,loading } = useSelector((state) => state.user); // Add loading state
+  // const [loading, setLoading] = useState(true);  // Track page loading
 
   useEffect(() => {
     if (isAuthenticated) {
       navigate("/", { replace: true });
-    }else{
-      setLoading(false);
     }
-  }, [isAuthenticated, navigate]); //
+  }, [isAuthenticated, loading , navigate]); //
   
-  if (loading) {
+  if (loading || isAuthenticated) {
     return null; // Render nothing (or a loading spinner) while redirect is happening
   }
   return (

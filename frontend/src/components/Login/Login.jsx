@@ -13,7 +13,7 @@ const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [visible, setVisible] = useState(false); // 👈 toggle state
-
+  
   const handleSubmit = async (e) => {
     e.preventDefault();
     await axios.post(`${server}/user/login`, {email, password} , 
@@ -23,8 +23,6 @@ const Login = () => {
           'Content-Type': 'application/json'
         }
       }
-     
-
     ).then((res) => {
       toast.success("Login Success!");
       navigate("/");

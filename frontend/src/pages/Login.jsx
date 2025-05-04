@@ -1,21 +1,28 @@
 import Login from "../components/Login/Login.jsx";
 import { useSelector } from "react-redux";
-import  { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-const LoginPage = () => {  
+const LoginPage = () => {
   const navigate = useNavigate();
-  const { isAuthenticated } = useSelector((state) => state.user);   
+  // const { isAuthenticated , loading } = useSelector((state) => state.user);
+  const { isAuthenticated,loading } = useSelector((state) => state.user);
+  // const [loading, setLoading] = useState(true);  // Track page loading
+
   useEffect(() => {
     if (isAuthenticated) {
-      navigate("/"); // 👈 redirect to home
+      navigate("/", { replace: true });
     }
-  }, [isAuthenticated, navigate]); // 👈 dependencies!
-    return (
-      <div>
-          <Login />
-      </div>
-    )
+  }, [isAuthenticated, loading , navigate]); // 👈 dependencies!
+
+  if (loading || isAuthenticated) {
+    return <div> Loading.........</div>; // Render nothing (or a loading spinner) while redirect is happening
   }
-  
-  export default LoginPage;
+  return (
+    <div>
+      <Login />
+    </div>
+  )
+}
+
+export default LoginPage;

@@ -1,12 +1,17 @@
 import axios from "axios";
 import { server } from "../../server";
 import { useNavigate } from "react-router-dom";
-
+import {
+  LoadUserRequest,
+  LoadUserSuccess,
+  LoadUserFail,
+  ClearError
+} from "../reducers/userReducer";
 // load user
 export const loadUser = () => async (dispatch) => {
     try {
       dispatch({
-        type: "LoadUserRequest",
+        type: LoadUserRequest,
       });
       const { data } = await axios.get(`${server}/user/getuser`, {
         withCredentials: true, // Keep this!
@@ -15,13 +20,13 @@ export const loadUser = () => async (dispatch) => {
         }
       });
       dispatch({
-        type: "LoadUserSuccess",
+        type: LoadUserSuccess,
         payload: data.user,
       });
     } catch (error) {
       const message = error.response?.data?.message || error.message;
       dispatch({
-        type: "LoadUserFail",
+        type: LoadUserFail,
         payload: message,
       });
       console.log('get user error')
