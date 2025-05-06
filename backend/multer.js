@@ -21,8 +21,29 @@ const storage = multer.diskStorage({
   },
 });
 
+// File filter to allow images only
+const fileFilter = (req, file, cb) => {
+  const allowedMimeTypes = ["image/jpeg", "image/png", "image/gif", "image/webp"];
+  if (allowedMimeTypes.includes(file.mimetype)) {
+    cb(null, true);
+  } else {
+    cb(new Error("Only image files are allowed!"), false);
+  }
+};
 
-exports.upload = multer({ storage: storage});
+const limits = {
+  fileSize: 5 * 1024 * 1024, // 5 MB
+};
+
+
+const upload = multer({
+  storage,
+  fileFilter,
+  limits,
+});
+
+module.exports = { upload };
+
 // you can replace the module.exports = { upload: multer({ storage: storage })}; with following
 // module.exports = {
 //     upload: multer({ storage: storage })

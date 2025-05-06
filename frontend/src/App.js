@@ -11,6 +11,10 @@ import {
   FAQPage,
   ProductDetailsPage,
   ProfilePage,
+  CheckoutPage,
+  PaymentPage,
+  CreateShopPage,
+
 } from "./routes/Routes";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -61,16 +65,16 @@ const App = () => {
                 </ProtectedRoute>
               }
             />
-            {/* <Route
-              path="/profile"
+            <Route
+              path="/checkout"
               element={
                 <ProtectedRoute isAuthenticated={isAuthenticated}>
-                  <ProfilePage />
+                  <CheckoutPage />
                 </ProtectedRoute>
               }
-            /> */}
-            {/* <Route path="/payment" element={<PaymentPage />} />
-            <Route path="/shop-create" element={<ShopCreatePage/>}/> */}
+            />
+            <Route path="/payment" element={<PaymentPage />} />
+            <Route path="/shop-create" element={<CreateShopPage/>}/>
 
           </Routes>
 
