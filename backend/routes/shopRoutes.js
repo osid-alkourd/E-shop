@@ -125,4 +125,10 @@ router.post(
   shopController.createShop
 );
 
+// activate seller
+router.post(
+  "/shops/activation",
+  shopController.activateShop
+);
+
 module.exports = router;
