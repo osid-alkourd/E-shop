@@ -5,7 +5,8 @@ const sendMail = require("../utils/sendMail");
 const jwt = require("jsonwebtoken");
 const fs = require("fs").promises;
 const path = require("path");
-const sendShopToken = require('../utils/sendShopToken')
+const sendShopToken = require("../utils/sendShopToken");
+const shop = require("../model/shop");
 // const bcrypt = require("bcryptjs");
 
 const ACTIVATION_TOKEN_EXPIRY = "10m";
@@ -27,21 +28,35 @@ const getAvatarUrl = (req, filename) => {
   return `${req.protocol}://${req.get("host")}${UPLOADS_BASE_PATH}/${filename}`;
 };
 
-const sendActivationEmail = async (shop, activationUrl) => {
+const sendShopActivationLinkToEmail = async (shop, activationUrl) => {
   const emailContent = {
     email: shop.email,
     subject: "Activate Your Shop Account",
     message: `Hello ${shop.name},\n\nWelcome to our platform! Please click the following link to activate your shop account:\n\n${activationUrl}\n\nThis link will expire in 10 minutes.`,
   };
-
   await sendMail(emailContent);
+};
+
+// send shop activation link
+const resendShopActivationLink = async (shop, res) => {
+  try {
+    const activationToken = createActivationToken(shop._id);
+    const activationUrl = generateActivationUrl(activationToken);
+    await sendShopActivationLinkToEmail(shop, activationUrl);
+    return res.status(200).json({
+      success: true,
+      message: `Email already exists. Activation link resent to ${shop.email}. Please check your email.`,
+      activationUrl: activationUrl, // For development/testing only
+    });
+  } catch (error) {
+    throw error;
+  }
 };
 
 // create shop
 const createShop = async (req, res, next) => {
   if (!req.file) {
-    //return next(new ErrorHandler("Avatar image is required", 400));
-   
+    return next(new ErrorHandler("Avatar image is required", 400));
   }
   try {
     const { name, email, phoneNumber, address, zipCode, password } = req.body;
@@ -59,17 +74,8 @@ const createShop = async (req, res, next) => {
           )
         );
       }
-      // Resend activation for inactive shop
-      const activationToken = createActivationToken(existingShop._id);
-      const activationUrl = generateActivationUrl(activationToken);
-
-      await sendActivationEmail(existingShop, activationUrl);
-
-      return res.status(200).json({
-        success: true,
-        message: `Email already exsit, Activation link resent to ${email}. Please check your email.`,
-        activationUrl: activationUrl,
-      });
+      // Resend activation link for inactive shop
+      return await resendShopActivationLink(existingShop, res);
     }
 
     // Create new shop
@@ -91,7 +97,7 @@ const createShop = async (req, res, next) => {
     const activationUrl = generateActivationUrl(activationToken);
 
     try {
-      await sendActivationEmail(shop, activationUrl);
+      await sendShopActivationLinkToEmail(shop, activationUrl);
 
       res.status(201).json({
         success: true,
@@ -142,16 +148,57 @@ const activateShop = async (req, res, next) => {
     if (shop.status === "active") {
       return next(new ErrorHandler("Shop is already activated", 400));
     }
-     // Activate the shop
-     shop.status = "active";
-     await shop.save();
-     sendShopToken(shop,201,res);
-     
+    // Activate the shop
+    shop.status = "active";
+    await shop.save();
+    sendShopToken(shop, 201, res);
   } catch (error) {
-    return next(new ErrorHandler("مالك", 500));
-
+    return next(new ErrorHandler("failed to activate the shop!", 500));
   }
 };
 
+// login the seller
 
-module.exports = { createShop, activateShop };
+const login = async (req, res, next) => {
+  try {
+    const { email, password } = req.body;
+    const shop = await Shop.findOne({ email }).select("+password");
+    if (!shop) {
+      return next(new ErrorHandler("Invalid email or password", 401));
+    }
+    // 3. Check if shop is active
+    if (shop.status !== "active") {
+      return await resendShopActivationLink(shop, res);
+    }
+
+    const isPasswordValid = await shop.comparePassword(password);
+    if (!isPasswordValid) {
+      return next(new ErrorHandler("Invalid email or password", 401));
+    }
+    sendShopToken(shop, 200, res);
+  } catch (error) {
+    return next(new ErrorHandler("Internal server error during login", 500));
+  }
+};
+
+const getCurrentShop = async (req, res, next) => {
+  try {
+    const shop = await Shop.findById(req.shop._id);
+    if (!shop) {
+      return next(new ErrorHandler("Shop not found", 404));
+    }
+
+    if(shop.status === 'inactive'){
+      return next(new ErrorHandler("inacive shop ", 403));
+
+    }
+    res.status(200).json({
+      success: true,
+      shop: shop
+    })
+  } catch (error) {
+      return next(new ErrorHandler(error.message, 500));
+  }
+};
+
+module.exports = { createShop, activateShop, login, getCurrentShop };

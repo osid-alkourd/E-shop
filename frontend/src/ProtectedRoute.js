@@ -1,10 +1,17 @@
 import { Navigate } from "react-router-dom";
 
-const ProtectedRoute = ({ isAuthenticated, children }) => {
+export const AuthProtectedRoute = ({ isAuthenticated, children }) => {
   if (!isAuthenticated) {
     return <Navigate to="/login" />;
   }
   return children;
 };
 
-export default ProtectedRoute;
+export const SellerProtectedRoute = ({ isSeller, children }) => {
+  if (!isSeller) {
+    return <Navigate to="/shop-login" />;
+  }
+  return children;
+};
+
+

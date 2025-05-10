@@ -18,7 +18,7 @@ const SignupPage = () => {
   }, [isAuthenticated, loading , navigate]); //
   
   if (loading || isAuthenticated) {
-    return null; // Render nothing (or a loading spinner) while redirect is happening
+    return  <div> Loading.........</div>;; // Render nothing (or a loading spinner) while redirect is happening
   }
   return (
     <div>

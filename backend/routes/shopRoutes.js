@@ -7,7 +7,7 @@ const fs = require("fs").promises;
 const path = require("path");
 const { body, validationResult } = require("express-validator");
 const Shop = require("../model/shop"); // Assuming you have a Shop model
-
+const {isSeller} = require('../middleware/isSeller');
 const validateShopCreation = [
   body("name")
     .notEmpty()
@@ -117,6 +117,41 @@ const validateShopCreation = [
   },
 ];
 
+const validateSellerLogin = [
+  body("email")
+    .trim()
+    .notEmpty()
+    .withMessage("Email is required")
+    .isEmail()
+    .withMessage("Invalid email format")
+    .normalizeEmail(),
+
+  body("password")
+    .trim()
+    .notEmpty()
+    .withMessage("Password is required")
+    .isLength({ min: 8 })
+    .withMessage("Password should be at least 8 characters"),
+
+  (req, res, next) => {
+    const errors = validationResult(req);
+
+    if (!errors.isEmpty()) {
+      const errorMessages = errors.array().map((err) => ({
+        field: err.path,
+        message: err.msg,
+      }));
+
+      return res.status(422).json({
+        success: false,
+        message: "Validation failed",
+        errors: errorMessages,
+      });
+    }
+    next();
+  },
+];
+
 // File upload middleware comes FIRST, then validation
 router.post(
   "/shops",
@@ -126,9 +161,12 @@ router.post(
 );
 
 // activate seller
-router.post(
-  "/shops/activation",
-  shopController.activateShop
-);
+router.post("/shops/activation", shopController.activateShop);
+
+// login the seller
+router.post("/shops/login", validateSellerLogin, shopController.login);
+
+// get authenicated seller
+router.get("/shops/me", isSeller , shopController.getCurrentShop);
 
 module.exports = router;
