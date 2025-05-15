@@ -14,6 +14,7 @@ import CreateShopPage from '../pages/shop/CreateShopPage'
 import   ActivationShopPage from '../pages/ActivationShopPage'
 import ShopLoginPage from '../pages/shop/ShopLoginPage';
 import ShopHomePage from '../pages/shop/ShopHomePage'
+import ShopDashboardPage from '../pages/shop/ShopDashboardPage'
 
 export {
   LoginPage,
@@ -32,4 +33,5 @@ export {
   ActivationShopPage,
   ShopLoginPage,
   ShopHomePage,
+  ShopDashboardPage
 };

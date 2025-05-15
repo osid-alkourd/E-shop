@@ -1,5 +1,6 @@
 import { Navigate } from "react-router-dom";
-
+import { useSelector } from "react-redux";
+import Loader from '../components/Layout/Loader';
 export const AuthProtectedRoute = ({ isAuthenticated, children }) => {
   if (!isAuthenticated) {
     return <Navigate to="/login" />;
@@ -7,7 +8,12 @@ export const AuthProtectedRoute = ({ isAuthenticated, children }) => {
   return children;
 };
 
-export const SellerProtectedRoute = ({ isSeller, children }) => {
+export const SellerProtectedRoute = ({children }) => {
+  const { shopLoading, isSeller } = useSelector((state) => state.shop);
+     if (shopLoading) {
+    return <Loader />;
+  }
+
   if (!isSeller) {
     return <Navigate to="/shop-login" />;
   }

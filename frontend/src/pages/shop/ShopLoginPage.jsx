@@ -9,7 +9,8 @@ const ShopLoginPage = () => {
   
     useEffect(() => {
       if (isSeller) {
-        navigate(`/shop/${shop._id}`, { replace: true });
+        // navigate(`/shop/${shop._id}`, { replace: true });
+        navigate(`/shop/dashboard`, { replace: true });
       }
     }, [isSeller, shopLoading , shop?._id]); // 👈 dependencies!
   

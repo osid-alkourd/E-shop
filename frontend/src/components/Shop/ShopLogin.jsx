@@ -32,7 +32,8 @@ const ShopLogin = () => {
             }
             // Case 2: Successful login
             toast.success("Login successful!");
-            // navigate("/dashboard"); // Or wherever you want to redirect
+            navigate("/shop/dashboard"); // Or wherever you want to redirect
+            window.location.reload(true);
 
         } catch (error) {
             if (error.response?.status === 401) {

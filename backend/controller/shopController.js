@@ -25,7 +25,7 @@ const generateActivationUrl = (token) => {
 };
 
 const getAvatarUrl = (req, filename) => {
-  return `${req.protocol}://${req.get("host")}${UPLOADS_BASE_PATH}/${filename}`;
+  return `${req.protocol}://${req.get("host")}${UPLOADS_BASE_PATH}/shops/${filename}`;
 };
 
 const sendShopActivationLinkToEmail = async (shop, activationUrl) => {
@@ -78,6 +78,8 @@ const createShop = async (req, res, next) => {
       return await resendShopActivationLink(existingShop, res);
     }
 
+
+      const fileName = req.file.filename;
     // Create new shop
     const shopData = {
       name,
@@ -86,7 +88,7 @@ const createShop = async (req, res, next) => {
       address,
       zipCode,
       password,
-      avatar: getAvatarUrl(req, req.file.filename),
+      avatar: {url:getAvatarUrl(req, fileName) ,public_id: fileName } ,
       status: "inactive",
     };
 

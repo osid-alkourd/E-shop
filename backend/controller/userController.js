@@ -40,7 +40,7 @@ router.post(
       if (password !== confirmPassword) {
         if (req.file) {
           await fs.unlink(
-            path.join(__dirname, "../uploads", req.file.filename)
+            path.join(__dirname, "../uploads/users", req.file.filename)
           );
         }
         return next(new ErrorHandler("Passwords do not match", 400));
@@ -53,7 +53,7 @@ router.post(
       if (existingUser) {
         if (req.file) {
           await fs.unlink(
-            path.join(__dirname, "../uploads", req.file.filename)
+            path.join(__dirname, "../uploads/users", req.file.filename)
           );
         }
         return next(new ErrorHandler("the email is already exist", 400));
@@ -62,7 +62,7 @@ router.post(
       let fullUrl = "";
       if (req.file) {
         fileName = req.file.filename;
-        fullUrl = `${req.protocol}://${req.get("host")}/uploads/${fileName}`;
+        fullUrl = `${req.protocol}://${req.get("host")}/uploads/users/${fileName}`;
       } else {
         (fileName = "no file name"), (fullUrl = "no file url");
       }
@@ -124,7 +124,7 @@ router.post(
         const fileName = decoded?.avatar?.public_id;
 
         if (fileName) {
-          const filePath = path.join(__dirname, "../uploads", fileName);
+          const filePath = path.join(__dirname, "../uploads/users", fileName);
           await fs.unlink(filePath);
           console.log("✅ Avatar deleted due to invalid/expired token.");
         }

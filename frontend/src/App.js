@@ -17,6 +17,7 @@ import {
   ActivationShopPage,
   ShopLoginPage,
   ShopHomePage,
+  ShopDashboardPage
 } from "./routes/Routes";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -28,23 +29,35 @@ import { loadShop } from "./redux/actions/shopAction";
 import store from "./redux/store";
 import "./App.css";
 import Events from "./components/Events/Events";
-import { useSelector } from "react-redux";
-import { AuthProtectedRoute, SellerProtectedRoute } from "./ProtectedRoute";
+import { useDispatch, useSelector } from "react-redux";
+import { AuthProtectedRoute, SellerProtectedRoute } from "./routes/ProtectedRoute";
 const App = () => {
+  const dispatch = useDispatch();
   const { loading, isAuthenticated } = useSelector((state) => state.user);
   const { shopLoading, isSeller } = useSelector((state) => state.shop);
 
   useEffect(() => {
-    store.dispatch(loadUser());
-    store.dispatch(loadShop());
-  }, []);
+    dispatch(loadUser());
+    dispatch(loadShop());
+  }, [dispatch]);
   // useEffect(() => {
   //   axios.get(`${server}/user/getuser`,{withCredential: true}).then((res) => {
 
   //   })
   // })
+  // Redirect logic after loading completes
+  // useEffect(() => {
+  //   if (loading || shopLoading) return; // Wait until both loads finish
 
-  if (loading || shopLoading) return <div>Loading...</div>;
+  //   if (isSeller) {
+  //     navigate("/seller/dashboard", { replace: true }); // Seller redirect
+  //   } else if (isAuthenticated) {
+  //     navigate("/", { replace: true }); // Normal user redirect
+  //   }
+  //   // Non-authenticated users: no redirect (stay on current route)
+  // }, [isAuthenticated, isSeller, loading, shopLoading]);
+
+  // if (loading || shopLoading) return <div>Loading...</div>;
 
   return (
     <>
@@ -89,8 +102,16 @@ const App = () => {
             <Route
               path="/shop/:id"
               element={
-                <SellerProtectedRoute isSeller={isSeller}>
+                <SellerProtectedRoute>
                   <ShopHomePage />
+                </SellerProtectedRoute>
+              }
+            />
+            <Route
+              path="/shop/dashboard"
+              element={
+                <SellerProtectedRoute>
+                  <ShopDashboardPage />
                 </SellerProtectedRoute>
               }
             />
