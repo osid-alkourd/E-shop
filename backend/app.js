@@ -10,6 +10,7 @@ const cors = require("cors");
 const user = require("./controller/userController");
 const errorMiddleware = require("./middleware/error");
 const shopRoutes = require('./routes/shopRoutes')
+const productRoutes = require('./routes/productRoutes');
 const app = express();
 
 const corsOptions = {
@@ -64,6 +65,7 @@ if (process.env.NODE_ENV !== "PRODUCTION") {
 connectDB();
 app.use("/api/v2/user", user);
 app.use("/api/v2", shopRoutes);
+app.use("/api/v2",productRoutes);
 
 
 app.use(errorMiddleware);

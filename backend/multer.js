@@ -11,12 +11,12 @@ if (!fs.existsSync(baseUploadDir)) {
 }
 
 // Map request paths to folder names
-const routeToFolderMap = {
-  "/api/v2/users": "users",
-  "/api/v2/shops": "shops",
-  "/api/v2/products": "products",
-  // Add more as needed
-};
+// const routeToFolderMap = {
+//   "/api/v2/users": "users",
+//   "/api/v2/shops": "shops",
+//   "/api/v2/products": "products",
+//   // Add more as needed
+// };
 
 // Set storage engine
 const storage = multer.diskStorage({

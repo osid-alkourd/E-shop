@@ -28,6 +28,17 @@ module.exports = (err, req, res, next) => {
     err = new ErrorHandler(message, 400);
   }
 
+  if (err.message === "Only image files are allowed!") {
+    return res.status(422).json({ error: err.message }); // 400 = Bad Request
+  }
+
+    // Specific Multer errors
+    if (err.code === "LIMIT_UNEXPECTED_FILE") {
+      return res
+        .status(422)
+        .json({ error: "Too many images uploaded. Max is 5 images." });
+    }
+  
   res.status(err.statusCode).json({
     success: false,
     message: err.message,

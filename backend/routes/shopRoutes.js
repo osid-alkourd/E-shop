@@ -133,23 +133,7 @@ const validateSellerLogin = [
     .isLength({ min: 8 })
     .withMessage("Password should be at least 8 characters"),
 
-  (req, res, next) => {
-    const errors = validationResult(req);
-
-    if (!errors.isEmpty()) {
-      const errorMessages = errors.array().map((err) => ({
-        field: err.path,
-        message: err.msg,
-      }));
-
-      return res.status(422).json({
-        success: false,
-        message: "Validation failed",
-        errors: errorMessages,
-      });
-    }
-    next();
-  },
+  
 ];
 
 // File upload middleware comes FIRST, then validation
