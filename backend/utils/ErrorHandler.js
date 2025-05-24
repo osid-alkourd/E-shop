@@ -1,11 +1,12 @@
-class ErrorHandler extends Error{
-    constructor(message,statusCode){
-        super(message);
-        this.statusCode = statusCode
+const error = require("../middleware/error");
 
-        Error.captureStackTrace(this,this.constructor);
+class ErrorHandler extends Error {
+  constructor(message, statusCode,errorCode = null) {
+    super(message);
+    this.statusCode = statusCode;
+    this.errorCode = errorCode;
 
-    }
-    
+    Error.captureStackTrace(this, this.constructor);
+  }
 }
-module.exports = ErrorHandler
+module.exports = ErrorHandler;

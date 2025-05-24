@@ -11,6 +11,8 @@ const user = require("./controller/userController");
 const errorMiddleware = require("./middleware/error");
 const shopRoutes = require('./routes/shopRoutes')
 const productRoutes = require('./routes/productRoutes');
+const eventRoutes = require('./routes/eventRoutes');
+
 const app = express();
 
 const corsOptions = {
@@ -66,6 +68,7 @@ connectDB();
 app.use("/api/v2/user", user);
 app.use("/api/v2", shopRoutes);
 app.use("/api/v2",productRoutes);
+app.use("/api/v2",eventRoutes);
 
 
 app.use(errorMiddleware);

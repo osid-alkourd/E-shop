@@ -32,15 +32,18 @@ module.exports = (err, req, res, next) => {
     return res.status(422).json({ error: err.message }); // 400 = Bad Request
   }
 
-    // Specific Multer errors
-    if (err.code === "LIMIT_UNEXPECTED_FILE") {
-      return res
-        .status(422)
-        .json({ error: "Too many images uploaded. Max is 5 images." });
-    }
-  
+  // Specific Multer errors
+  if (err.code === "LIMIT_UNEXPECTED_FILE") {
+    return res
+      .status(422)
+      .json({ error: "Too many images uploaded. Max is 5 images." });
+  }
+
   res.status(err.statusCode).json({
     success: false,
-    message: err.message,
+    error: {
+      // code: err.errorCode || "INTERNAL_SERVER_ERROR",
+      message: err.message,
+    },
   });
 };

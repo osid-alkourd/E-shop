@@ -89,7 +89,7 @@ const validateShopCreation = [
         try {
           const filePath = path.join(
             __dirname,
-            "../uploads",
+            "../uploads/shops",
             req.file.filename
           );
           await fs.access(filePath); // Check if file exists
