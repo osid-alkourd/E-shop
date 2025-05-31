@@ -1,14 +1,17 @@
-const { body } = require("express-validator");
+// const { body } = require("express-validator");
 const ErrorHandler = require("../utils/ErrorHandler"); // Optional error handler
 const Coupon = require("../model/coupon");
 const { isValidObjectId } = require("mongoose");
 const {
   createCoupon,
   updateCoupon,
+  getmyCoupons,
+  deleteCoupon,
 } = require("../controller/couponController");
 const express = require("express");
 const router = express.Router();
 const { isSeller } = require("../middleware/isSeller");
+const { body, param, query, validationResult } = require("express-validator");
 
 const couponCodeValidation = [
   body("code")
@@ -85,7 +88,8 @@ const couponCodeValidation = [
         );
       }
       return true;
-    }).toFloat(),
+    })
+    .toFloat(),
 
   // Start date validation
   body("startDate")
@@ -176,8 +180,34 @@ const couponCodeValidation = [
     .default(false),
 ];
 
+const validateGetSpecificShopCoupons = [
+  [
+   
+    query("page")
+      .optional()
+      .isInt({ min: 1 })
+      .withMessage("Page must be a positive integer"),
+    query("limit")
+      .optional()
+      .isInt({ min: 1, max: 100 })
+      .withMessage("Limit must be between 1 and 100"),
+  ],
+];
+
 router.post("/coupons", isSeller, couponCodeValidation, createCoupon);
 
 router.put("/coupons/:id", isSeller, couponCodeValidation, updateCoupon);
+
+// view coupons for the current authenticated shop
+router.get(
+  "/coupons",
+  isSeller,
+  validateGetSpecificShopCoupons,
+  getmyCoupons
+);
+
+
+
+router.delete("/coupons/:id", isSeller, deleteCoupon);
 
 module.exports = router;

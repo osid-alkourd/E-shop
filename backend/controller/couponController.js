@@ -1,8 +1,7 @@
 const { body, validationResult } = require("express-validator");
 const ErrorHandler = require("../utils/ErrorHandler"); // Optional error handler
 const Coupon = require("../model/coupon");
-const Product = require("../model/product");
-
+const Shop = require("../model/shop");
 const { isValidObjectId } = require("mongoose");
 
 const createCoupon = async (req, res, next) => {
@@ -128,8 +127,6 @@ const updateCoupon = async (req, res, next) => {
 
     const updateData = getCouponData(req);
 
-  
-
     // 7. Update the coupon
     const updatedCoupon = await Coupon.findByIdAndUpdate(couponId, updateData, {
       new: true,
@@ -151,7 +148,85 @@ const updateCoupon = async (req, res, next) => {
   }
 };
 
-module.exports = { createCoupon, updateCoupon };
+const getmyCoupons = async (req, res, next) => {
+  try {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return next(new ErrorHandler(errors.array()[0].msg, 422));
+    }
+
+    // Get pagination parameters from query string
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+    const skip = (page - 1) * limit;
+
+    // Check if shop exists (even if middleware should have set it)
+    if (!req.shop?._id) {
+      return next(new ErrorHandler("Shop authentication required", 401));
+    }
+
+    // Find coupons for the current shop
+    const coupons = await Coupon.find({ shop: req.shop._id })
+      .skip(skip)
+      .limit(limit)
+      .sort({ createdAt: -1 })
+      .lean();
+
+    // Get total count for pagination info
+    const totalCoupons = await Coupon.countDocuments({ shop: req.shop._id });
+    const totalPages = Math.ceil(totalCoupons / limit);
+
+    res.json({
+      success: true,
+      coupons,
+      pagination: {
+        currentPage: page,
+        totalPages,
+        totalCoupons,
+        hasNextPage: page < totalPages,
+        hasPreviousPage: page > 1,
+      },
+    });
+  } catch (error) {
+    return next(new ErrorHandler(error.message, 500));
+  }
+};
+
+const deleteCoupon = async (req, res, next) => {
+  try {
+    // 1. Check if shop is authenticated
+    if (!req.shop?._id) {
+      return next(new ErrorHandler("Shop authentication required", 401));
+    }
+
+    const { id } = req.params;
+
+    // 2. Validate couponId format (MongoDB ObjectId)
+    if (!id || !isValidObjectId(id)) {
+      return next(new ErrorHandler("Invalid Coupon ID", 422));
+    }
+
+    // 3. Delete only if the coupon belongs to the requesting shop
+    const deletedCoupon = await Coupon.findOneAndDelete({
+      _id: id,
+      shop: req.shop._id, // Ensures ownership
+    });
+
+    // 4. Handle case where coupon doesn't exist or isn't owned by the shop
+    if (!deletedCoupon) {
+      return next(new ErrorHandler("Coupon not found or unauthorized", 404));
+    }
+
+    // 5. Success response
+    res.status(200).json({
+      success: true,
+      message: "Coupon deleted successfully",
+    });
+  } catch (error) {
+    return next(new ErrorHandler("network error", 500));
+  }
+};
+module.exports = { createCoupon, updateCoupon, getmyCoupons, deleteCoupon };
 
 const getCouponData = (req) => {
   return {
