@@ -21,9 +21,15 @@ const orderSchema = new Schema(
     },
 
     paymentMethod: {
-      type: String,
-      enum: ["credit_card", "paypal", "bank_transfer"],
-      required: true,
+      type: {
+        type: String,
+        enum: ["stripe"],
+        required: true,
+      },
+      method: {
+        type: String,
+        required: true, // e.g. 'card', 'bank_transfer', 'apple_pay'
+      },
     },
     paymentStatus: {
       type: String,
@@ -54,10 +60,13 @@ orderSchema.virtual("formattedDate").get(function () {
 // Static method to find orders by user
 orderSchema.statics.findByUser = function (userId, page = 1, limit = 10) {
   const skip = (page - 1) * limit;
-  return this.find({ user: userId }).sort({ createdAt: -1 }).skip(skip).limit(limit);
+  return this.find({ user: userId })
+    .sort({ createdAt: -1 })
+    .skip(skip)
+    .limit(limit);
 };
 
 orderSchema.set("toJSON", { virtuals: true });
 orderSchema.set("toObject", { virtuals: true });
 
-module.exports = mongoose.model('Order', orderSchema);
+module.exports = mongoose.model("Order", orderSchema);

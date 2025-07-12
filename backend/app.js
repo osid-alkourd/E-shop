@@ -13,6 +13,7 @@ const shopRoutes = require('./routes/shopRoutes')
 const productRoutes = require('./routes/productRoutes');
 const eventRoutes = require('./routes/eventRoutes');
 const couponRoutes = require('./routes/couponRoutes');
+const orderRoutes = require('./routes/orderRoutes');
 const app = express();
 
 const corsOptions = {
@@ -70,6 +71,14 @@ app.use("/api/v2", shopRoutes);
 app.use("/api/v2",productRoutes);
 app.use("/api/v2",eventRoutes);
 app.use("/api/v2",couponRoutes);
+app.use("/api/v2", orderRoutes);
+// app.use("/", (req, res) => {
+//   console.log("Welcome to E-Shop API");
+//   res.status(200).json({  
+//     success: true,
+//     message: "Welcome to E-Shop API",
+//   });
+// });
 
 app.use(errorMiddleware);
 module.exports = app;

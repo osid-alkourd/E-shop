@@ -56,15 +56,6 @@ const validateCreateOrder = [
     .withMessage("City must be a string")
     .trim()
     .notEmpty()
-    .withMessage("City cannot be empty"),
-
-  body("shippingAddress.city")
-    .exists()
-    .withMessage("City is required")
-    .isString()
-    .withMessage("City must be a string")
-    .trim()
-    .notEmpty()
     .withMessage("City cannot be empty")
     .isLength({ max: 100 })
     .withMessage("City cannot exceed 100 characters"),
@@ -201,5 +192,5 @@ const validateCreateOrder = [
 ];
 
 module.exports = {
-  validateCreateOrder
+  validateCreateOrder,
 };

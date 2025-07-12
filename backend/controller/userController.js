@@ -170,7 +170,7 @@ router.post(
       "$2a$10$z0vqhd3rRtVXeFZK8BfKzO8N5xZ9Px3FkMZPQzj1jSt7k6H6PV5C6";
 
     if (!user || !(await user.comparePassword(password))) {
-      await bcrypt.compare(password, dummyHash); // always takes similar time
+     await bcrypt.compare(password, dummyHash); // always takes similar time
       return next(new ErrorHandler("Invalid email or password", 401));
     }
 
